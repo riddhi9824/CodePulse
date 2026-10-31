@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertCircle, CheckCircle2, X } from "lucide-react";
 
 import Sidebar from "./components/Sidebar";
@@ -29,8 +29,25 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [findings, setFindings] = useState([]);
   const [analysisResult, setAnalysisResult] = useState(null);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(() => {
+    try {
+      const savedHistory = localStorage.getItem("codepulse_history");
+      return savedHistory ? JSON.parse(savedHistory) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("codepulse_history", JSON.stringify(history));
+  }, [history]);
+
   const [notification, setNotification] = useState(null);
+
+  const handleClearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem("codepulse_history");
+  };
 
   const handleAnalyze = async (code) => {
     setLoading(true);
@@ -224,7 +241,13 @@ function App() {
         {activePage === "history" && (
           <AnalysisHistory
             history={history}
-            onNavigate={setActivePage}
+            onNavigate={(page) => {
+              if (page === "clear-history") {
+                handleClearHistory();
+              } else {
+                setActivePage(page);
+              }
+            }}
           />
         )}
       </main>

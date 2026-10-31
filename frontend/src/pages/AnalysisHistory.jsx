@@ -20,10 +20,26 @@ function AnalysisHistory({ history = [], onNavigate }) {
                 <div className="panel-heading">
                     <div>
                         <h3>Recent Analyses</h3>
-                        <p>{history.length} analyses recorded in this session</p>
+                        <p>{history.length} analyses recorded in total</p>
                     </div>
 
-                    <span className="history-count">{history.length}</span>
+                    <div className="history-heading-actions">
+                        <span className="history-count">{history.length}</span>
+
+                        {history.length > 0 && (
+                            <button
+                                type="button"
+                                className="secondary-button"
+                                onClick={() => {
+                                    if (window.confirm("Are you sure you want to clear all analysis history?")) {
+                                        onNavigate("clear-history");
+                                    }
+                                }}
+                            >
+                                Clear History
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {history.length === 0 ? (
